@@ -81,6 +81,6 @@ backend/
 ```bash
 cd backend
 npm install
-npm run dev   # o: npm start, según tus scripts
+npm run dev   # o: npm start
 ```
 ---
