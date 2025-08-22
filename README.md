@@ -1,6 +1,7 @@
 # 📚 Guía del Proyecto — Órdenes de Compra
 
-Este README es una **guía rápida para desarrolladores**. Resume la **estructura de carpetas**, los **archivos clave** y los **pasos para ejecutar** el proyecto tanto en _frontend_ (React) como en _backend_ (Node.js/Express).
+Este README es una guía rápida que resume la **estructura de carpetas** a utilizar para el backend y el frontend. 
+Trabajando en creacion de APIS cada uno. **Actualizado el 22/08/2025**
 
 ---
 
