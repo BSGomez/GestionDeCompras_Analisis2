@@ -1,0 +1,263 @@
+:root {
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 72px;
+  --icon-color: #000; /* negro */
+  --icon-color-icon: #fff; /* blanco */
+}
+
+/* Shell del layout */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--surface-ground);
+}
+
+/* Lateral (desktop) */
+.sidebar {
+  width: var(--sidebar-width);
+  border-right: 1px solid var(--surface-border);
+  background: var(--surface-card);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  transition: width .2s ease;
+}
+
+.sidebar.collapsed {
+  width: var(--sidebar-collapsed-width);
+}
+
+/* Header del sidebar */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .75rem 1rem;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+/* Toggle (icono cuadrado, sin óvalo) */
+.sidebar-toggle {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.sidebar-toggle:hover {
+  background: var(--surface-hover);
+}
+.sidebar-toggle:focus {
+  outline: 2px solid transparent; /* evita “óvalo” azul */
+}
+
+/* Contenedor de items */
+.nav {
+  padding: .5rem;
+}
+
+/* Item */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .6rem .75rem;
+  border-radius: .5rem;
+  color: var(--text-color);
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s ease, color .15s ease;
+}
+
+.nav-item:hover {
+  background: var(--surface-hover);
+}
+
+/* Activo: negro con texto blanco */
+.nav-item.active {
+  background: #000;
+  color: #fff;
+}
+
+/* Ícono consistente (sin deformación) */
+.nav-item .pi {
+  width: 22px;
+  height: 22px;
+  font-size: 1.1rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Etiqueta (oculta en colapsado) */
+.nav-item .label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Colapsado: ocultar labels y centrar */
+.sidebar.collapsed .label {
+  display: none;
+}
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+}
+
+/* Área principal */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Topbar */
+.topbar {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 .75rem 0 1rem;
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface-ground);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Contenido */
+.content {
+  padding: 1rem;
+}
+
+/* Responsive: esconder lateral fija en móviles (usaremos Sidebar overlay) */
+@media (max-width: 992px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: 1rem;
+}
+
+.page-header .title {
+  margin: 0;
+  font-size: 1.35rem;        /* ≈ h2 compacto */
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.page-header .subtitle {
+  margin: .25rem 0 0;
+  color: var(--text-color-secondary);
+  font-size: .95rem;
+}
+
+/* Botón "pill" oscuro (como el de la imagen) */
+.btn-pill-dark.p-button {
+  background: #0b0b17;       /* muy oscuro */
+  border-color: #0b0b17;
+  color: #fff;
+  border-radius: 12px;
+  padding: .55rem .9rem;
+}
+.btn-pill-dark.p-button .p-button-icon-left {
+  margin-right: .4rem;
+}
+
+/* ===== TabView “pill” ===== */
+.pill-tabs.p-tabview .p-tabview-nav-container {
+  background: transparent;
+  border: none;
+}
+.pill-tabs.p-tabview .p-tabview-nav {
+  background: #f3f4f6;       /* barra gris clara */
+  border-radius: 999px;       /* pill container */
+  padding: .25rem;
+  border: 1px solid var(--surface-border);
+  gap: .25rem;
+}
+.pill-tabs.p-tabview .p-tabview-nav li {
+  margin: 0;                  /* sin gaps de li */
+}
+.pill-tabs.p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  padding: .55rem 1rem;
+  color: var(--text-color-secondary);
+  transition: background .2s ease, color .2s ease, box-shadow .2s ease;
+}
+.pill-tabs.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  background: #ffffff;
+  color: var(--text-color);
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+.pill-tabs.p-tabview .p-tabview-panels {
+  border: none;
+  padding: 1rem 0 0 0;        /* sin caja alrededor; como en la imagen */
+}
+
+/* Opcional: compactar tipografías dentro del área */
+.pill-tabs .section-hint {
+  color: var(--text-color-secondary);
+  font-size: .9rem;
+  margin-top: .25rem;
+}
+
+
+/* Marca (logo + textos) del sidebar */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.brand-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--icon-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-badge .pi {
+  font-size: 1.15rem;
+  color: var(--icon-color-icon);
+  line-height: 1;
+}
+
+.brand-texts {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand-title {
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.brand-subtitle {
+  color: var(--text-color-secondary);
+  font-size: .9rem;
+}
+
+/* Cuando el sidebar está colapsado, esconde textos pero deja el badge */
+.sidebar.collapsed .brand-texts { display: none; }
