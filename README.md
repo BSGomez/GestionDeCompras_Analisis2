@@ -1,4 +1,4 @@
-# 📚 Guía del Proyecto — Órdenes de Compra
+# 📚 Guía Órdenes de Compra React + Node.js
 
 Este README es una guía rápida que resume la **estructura de carpetas** a utilizar para el backend y el frontend. 
 Trabajando en creacion de APIS cada uno. **Actualizado el 22/08/2025**
