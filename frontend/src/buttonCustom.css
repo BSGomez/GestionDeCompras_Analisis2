@@ -1,0 +1,19 @@
+
+.btn-icon-large .p-button-icon, .btn-icon-large .pi {
+  font-size: 1.7rem !important;
+}
+.btn-icon-large .p-button-label {
+  font-size: 0.85rem !important;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.btn-icon-large.p-button {
+  min-width: 36px;
+  min-height: 34px;
+  padding: 0.28rem 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Puedes ajustar los tamaños según necesidad */

@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useRef } from "react";
 import "./inputSizes.css";
+import "./buttonCustom.css";
 import { Button } from "primereact/button";
 import { TabView, TabPanel } from "primereact/tabview";
 import { Card } from "primereact/card";
@@ -326,7 +327,7 @@ export default function PurchaseRequestsModule() {
               }
             />
             <div className="flex gap-2">
-              <Button icon="pi pi-send" label="Enviar a revisión" onClick={() => handleEnviarRevision(s)} outlined />
+              <Button icon="pi pi-send" label="Enviar a revisión" onClick={() => handleEnviarRevision(s)} outlined className="btn-icon-large" />
               <Button icon="pi pi-pencil" rounded text aria-label="Editar" />
               <Button icon="pi pi-trash" rounded text aria-label="Eliminar" severity="danger" />
             </div>
@@ -469,14 +470,16 @@ export default function PurchaseRequestsModule() {
                     icon="pi pi-eye"
                     rounded
                     text
+                    className="btn-icon-large"
                     onClick={() => window.open(cotizacion.url, "_blank", "noopener,noreferrer")}
                     aria-label="Ver adjunto"
                   />
                   <Button
-                    icon="pi pi-times"
+                    icon="pi pi-ban"
                     rounded
                     text
                     severity="danger"
+                    className="btn-icon-large"
                     onClick={onClearCotizacion}
                     aria-label="Quitar adjunto"
                   />
@@ -553,7 +556,7 @@ export default function PurchaseRequestsModule() {
             />
           </div>
           <div className="field col-6 md:col-1 mb-0 flex align-items-center justify-content-end" style={{minWidth: '110px', marginBottom: '0'}}>
-            <Button icon="pi pi-plus" label="Agregar renglón" onClick={addLineaTemp} className="w-full" />
+            <Button icon="pi pi-plus" label="Agregar renglón" onClick={addLineaTemp} className="w-full btn-icon-large" />
           </div>
         </div>
 
@@ -566,10 +569,12 @@ export default function PurchaseRequestsModule() {
         <div className="flex align-items-center justify-content-between">
           <div className="font-medium">Total estimado: {totalTemp}</div>
           <div className="flex gap-2">
-            <Button icon="pi pi-check" label="Guardar solicitud" onClick={handleSaveSolicitud} />
+            <Button icon="pi pi-save" label="Guardar solicitud" onClick={handleSaveSolicitud} className="btn-icon-large" />
             <Button
+              icon="pi pi-ban"
               label="Cancelar"
               outlined
+              className="btn-icon-large"
               onClick={() => {
                 setEncForm({
                   SOL_Nombre: "",
@@ -632,7 +637,7 @@ export default function PurchaseRequestsModule() {
           <h2 className="title">Solicitudes de Compra</h2>
           <p className="subtitle">Crear, listar y enviar a aprobación</p>
         </div>
-        <Button icon="pi pi-plus" label="Nueva solicitud" className="btn-pill-dark" onClick={() => setActive(1)} />
+  <Button icon="pi pi-plus" label="Nueva solicitud" className="btn-pill-dark btn-icon-large" onClick={() => setActive(1)} />
       </div>
 
       <TabView className="pill-tabs" activeIndex={active} onTabChange={(e) => setActive(e.index)}>
