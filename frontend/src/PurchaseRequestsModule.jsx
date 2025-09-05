@@ -417,7 +417,7 @@ export default function PurchaseRequestsModule() {
             />
           </div>
 
-          <div className="field col-12 md:col-3">
+          <div className="field col-12 md:col-2" style={{minWidth: '150px', marginBottom: '0.5rem'}}>
             <label>Prioridad</label>
             <Dropdown
               value={encForm.SOL_Prioridad}
@@ -427,7 +427,7 @@ export default function PurchaseRequestsModule() {
                 { label: "Bajo", value: "Bajo" },
               ]}
               onChange={(e) => setEncForm({ ...encForm, SOL_Prioridad: e.value })}
-              className="select-xs"
+              className="select-md"
             />
           </div>
 
@@ -494,7 +494,7 @@ export default function PurchaseRequestsModule() {
 
       <Card>
         <div className="font-medium mb-3">Renglones</div>
-        <div className="p-fluid grid formgrid">
+  <div className="p-fluid grid formgrid align-items-center" style={{gap: '1.1rem 1.7rem', marginBottom: '0.9rem'}}>
           <div className="field col-12 md:col-4">
             <label>Proveedor *</label>
             <Dropdown
@@ -555,7 +555,7 @@ export default function PurchaseRequestsModule() {
               className="select-lg"
             />
           </div>
-          <div className="field col-6 md:col-1 mb-0 flex align-items-center justify-content-end" style={{minWidth: '110px', marginBottom: '0'}}>
+          <div className="field col-6 md:col-1 mb-0 flex flex-column align-items-center justify-content-center" style={{minWidth: '110px', marginBottom: '0', marginTop: '1.2rem'}}>
             <Button icon="pi pi-plus" label="Agregar renglón" onClick={addLineaTemp} className="w-full btn-icon-large" />
           </div>
         </div>
