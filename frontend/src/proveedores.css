@@ -1,0 +1,147 @@
+:root{
+  --oc-yellow: #ffe066;            /* Amarillo header/panel */
+  --oc-yellow-weak: #ffec99;       /* Amarillo tenue */
+  --oc-primary: #2f6df6;           /* Azul acción principal */
+  --oc-primary-600: #2155d8;
+  --oc-home-red: #ef4444;          /* Rojo botón home */
+  --oc-bg: #f6f7fb;                /* Fondo general */
+  --oc-text: #1f2937;              /* Texto */
+  --oc-muted: #6b7280;             /* Secundario */
+  --oc-border: #e5e7eb;
+
+  --pill-radius: 999px;
+  --radius-lg: 16px;
+
+  --field-height: 44px;
+  --field-pad-x: 1rem;
+  --field-pad-y: .5rem;
+}
+
+/* Página */
+.oc-page{
+  padding: 1rem;
+  background: var(--oc-bg);
+  color: var(--oc-text);
+}
+
+/* Barra superior amarilla */
+.oc-topbar{
+  background: var(--oc-yellow);
+  border-radius: 14px;
+  padding: .9rem 1.1rem;
+  display:flex; align-items:center; justify-content:space-between;
+  gap: 1rem;
+  margin-bottom: .75rem;
+}
+.oc-title{
+  margin:0; font-size: 1.6rem; font-weight: 800; color: #1c1c1c;
+}
+.oc-subtitle{
+  margin:0; font-size:.95rem; color: #2e2e2e; opacity:.8;
+}
+
+/* Botón Inicio (rojo redondo) */
+.oc-home{
+  background: var(--oc-home-red) !important;
+  color: #fff !important;
+  border: none !important;
+  width: 40px; height: 40px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius: 999px !important;
+}
+.oc-home .pi{ font-size: 1rem; }
+
+/* Botón principal azul */
+.oc-primary{
+  background: var(--oc-primary) !important;
+  border: 1px solid var(--oc-primary) !important;
+  color: #fff !important;
+}
+.oc-primary:hover{ background: var(--oc-primary-600) !important; }
+.oc-outline{
+  background: transparent !important;
+  color: var(--oc-primary) !important;
+  border: 1px solid var(--oc-primary) !important;
+}
+
+/* Píldoras */
+.oc-pill,
+.p-inputtext,
+.p-inputtextarea,
+.p-dropdown,
+.p-inputnumber,
+.p-multiselect{
+  border-radius: var(--pill-radius) !important;
+  height: var(--field-height) !important;
+  padding: var(--field-pad-y) var(--field-pad-x) !important;
+}
+.p-inputtextarea{
+  height: auto !important;
+}
+
+/* Icono dentro del input (buscador) */
+.p-input-icon-left > .p-inputtext{
+  padding-left: 2.25rem !important;
+}
+.p-input-icon-left > i{
+  left:.85rem; color: var(--oc-primary);
+}
+
+/* Tabs tipo píldora con iconos */
+.oc-tabs .p-tabview-nav{
+  background: transparent;
+  border: none;
+  gap: .5rem;
+  padding-left: .2rem;
+}
+.oc-tabs .p-tabview-nav li .p-tabview-nav-link{
+  border-radius: var(--pill-radius);
+  border: 1px solid var(--oc-border);
+  background: #fff;
+  color: var(--oc-text);
+  font-weight: 600;
+}
+.oc-tabs .p-tabview-nav li.p-highlight .p-tabview-nav-link{
+  background: #eef2ff;
+  color: #1f2937;
+  border-color: #dbe2ff;
+}
+
+/* Panel amarillo del formulario */
+.oc-panel-yellow{
+  background: var(--oc-yellow-weak);
+  border: 1px solid #f9e07a;
+  border-radius: var(--radius-lg);
+}
+.oc-panel-yellow .p-card-body{ padding: 1rem 1rem !important; }
+
+/* Panel blanco (detalle) */
+.oc-panel-white{
+  background: #fff;
+  border: 1px solid var(--oc-border);
+  border-radius: var(--radius-lg);
+}
+.oc-panel-white .p-card-body{ padding: 1rem 1rem !important; }
+
+/* Cards de listado */
+.oc-card{
+  border-radius: var(--radius-lg);
+  box-shadow: 0 6px 18px rgba(0,0,0,.04);
+}
+
+/* Chip de icono */
+.oc-chip{
+  width: 44px; height: 44px; border-radius: 12px;
+  background: #e8f0ff; color: var(--oc-primary);
+  display:flex; align-items:center; justify-content:center;
+  font-size: 1rem;
+}
+
+/* Requeridos */
+.req{ color:#dc2626; }
+
+/* Ajustes menores */
+.p-divider{ margin: .5rem 0 1rem 0; }
+
+/* Botones como píldora */
+.p-button{ border-radius: var(--pill-radius) !important; font-weight: 600 !important; }

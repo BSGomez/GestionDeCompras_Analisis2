@@ -296,7 +296,6 @@ export default function PurchaseOrdersModule() {
                 icon="pi pi-send"
                 label="Enviar a aprobación"
                 severity="help"
-                raised
                 rounded
                 onClick={() => handleEnviarRevision(o)}
               />
@@ -307,7 +306,6 @@ export default function PurchaseOrdersModule() {
                 icon="pi pi-history"
                 label="Borrador"
                 severity="danger"
-                raised
                 rounded
                 onClick={() => handleVolverBorrador(o)}
                 tooltip="Volver a borrador"
@@ -318,14 +316,12 @@ export default function PurchaseOrdersModule() {
               icon="pi pi-pencil"
               label="Editar"
               rounded
-              raised
               severity="secondary"
             />
             <Button
               icon="pi pi-trash"
               label="Eliminar"
               rounded
-              raised
               severity="danger"
             />
           </div>
@@ -385,7 +381,7 @@ export default function PurchaseOrdersModule() {
         {/* Contenedor encabezado gris */}
         <div
           className="p-3 border-round"
-          style={{ background: "#f5f6f7", border: "1px solid #e6e7e9" }}
+          style={{ background: "var(--surface-alt)", border: "1px solid #e6e7e9" }}
         >
           <div className="grid formgrid align-items-end">
             {/* Fila 1: Proveedor, Moneda, Condición, Forma de Pago */}
@@ -526,7 +522,6 @@ export default function PurchaseOrdersModule() {
               label="Agregar renglón"
               size="small"
               rounded
-              raised
               severity="help"
               onClick={addLineaTemp}
               className="btn-auto"
@@ -544,11 +539,10 @@ export default function PurchaseOrdersModule() {
         <div className="flex align-items-center justify-content-between">
           <div className="font-medium">Total estimado: {totalTemp}</div>
           <div className="flex gap-2">
-            <Button icon="pi pi-save" label="Guardar OC" raised severity="success" onClick={handleSaveOC} />
+            <Button icon="pi pi-save" label="Guardar OC" severity="success" onClick={handleSaveOC} />
             <Button
               icon="pi pi-times"
               label="Cancelar"
-              raised
               outlined
               severity="secondary"
               onClick={() => {
@@ -565,21 +559,38 @@ export default function PurchaseOrdersModule() {
 
   // Render
   return (
-    <div>
-      {/* Estilos: encabezado, tarjetas de listado y chip inline */}
+    <div className="pill-ui page-wrapper">
+      {/* Estilos: encabezado, tarjetas de listado, chip inline y “pill” ajustado */}
       <style>{`
+        :root{
+          --bg-enterprise: #f0f2f5;     /* fondo empresarial (gris neutro) */
+          --surface-alt:   #ffe46cff;     /* superficies suaves */
+          --brand-primary: #004DA7;     /* azul corporativo */
+          --brand-accent:  #5DAA42;     /* verde corporativo */
+        }
+
+        /* Fondo empresarial a toda la vista */
+        .page-wrapper {
+          background: var(--bg-enterprise);
+          min-height: 100vh;
+          padding: 1rem;
+        }
+
         .page-header-bar {
-          background: #f5f6f7;
+          background: var(--surface-alt);
           border: 1px solid #e6e7e9;
-          border-radius: 12px;
+          border-radius: 14px;
           padding: 12px 16px;
           margin-bottom: 16px;
         }
+
         .btn-auto.p-button { width: auto !important; padding-inline: 0.75rem !important; }
 
         .po-card {
           border-left: 4px solid #3b82f6;
           transition: box-shadow .2s ease, transform .1s ease;
+          border-radius: 16px;
+          background: white;
         }
         .po-card:hover {
           box-shadow: 0 6px 18px rgba(0,0,0,.08);
@@ -589,12 +600,68 @@ export default function PurchaseOrdersModule() {
         /* Chip de estado inline (junto al proveedor) */
         .po-chip-inline {
           margin-left: .25rem;
-          padding: .15rem .5rem;
-          line-height: 1;
-          font-size: .8rem;
-          box-shadow: 0 2px 6px rgba(0,0,0,.06);
+          padding: .1rem .6rem;   /* más delgado */
+          line-height: 1.15;
+          font-size: .78rem;
+          box-shadow: 0 2px 6px rgba(0,0,0,.04);
           font-weight: 600;
+          border-radius: 9999px;  /* asegurar píldora */
         }
+
+        /* ======= PILL / MEDIO CIRCULAR MÁS DELGADO ======= */
+        .pill-ui .p-inputtext,
+        .pill-ui .p-dropdown,
+        .pill-ui .p-multiselect,
+        .pill-ui .p-chips .p-chips-multiple-container,
+        .pill-ui .p-calendar .p-inputtext,
+        .pill-ui .p-inputnumber input,
+        .pill-ui .p-button,
+        .pill-ui .p-tag,
+        .pill-ui .p-autocomplete .p-inputtext {
+          border-radius: 9999px !important; /* forma píldora */
+          padding-top: .35rem;              /* delgado: ajustado al texto */
+          padding-bottom: .35rem;           /* delgado: ajustado al texto */
+          font-size: .95rem;
+        }
+
+        /* Botones algo más compactos horizontalmente también */
+        .pill-ui .p-button {
+          padding-left: 0.9rem;
+          padding-right: 0.9rem;
+        }
+
+        /* Dropdown/Multiselect triggers redondeados */
+        .pill-ui .p-dropdown .p-dropdown-trigger,
+        .pill-ui .p-multiselect .p-multiselect-trigger {
+          border-top-right-radius: 9999px !important;
+          border-bottom-right-radius: 9999px !important;
+        }
+
+        /* Icon inputs (buscador con ícono a la izquierda) */
+        .pill-ui .p-input-icon-left > .p-inputtext,
+        .pill-ui .p-input-icon-right > .p-inputtext {
+          border-radius: 9999px !important;
+          padding-left: 2rem;   /* espacio para el ícono sin verse “grueso” */
+        }
+
+        /* Paginador redondo */
+        .pill-ui .p-paginator .p-paginator-page,
+        .pill-ui .p-paginator .p-paginator-first,
+        .pill-ui .p-paginator .p-paginator-prev,
+        .pill-ui .p-paginator .p-paginator-next,
+        .pill-ui .p-paginator .p-paginator-last {
+          border-radius: 9999px !important;
+        }
+
+        /* TabView estilo píldora y compacto */
+        .pill-ui .p-tabview-nav-link {
+          border-radius: 9999px !important;
+          padding: .35rem .9rem;
+        }
+
+        /* Pequeño realce de color de íconos de tabs, como pediste empresarial */
+        .pill-ui .p-tabview .p-tabview-nav li .p-tabview-nav-link i.pi.pi-list { color: var(--brand-primary) !important; }
+        .pill-ui .p-tabview .p-tabview-nav li .p-tabview-nav-link i.pi.pi-file  { color: var(--brand-accent) !important; }
       `}</style>
 
       <div className="page-header-bar flex align-items-center justify-content-between">
@@ -608,7 +675,6 @@ export default function PurchaseOrdersModule() {
             icon="pi pi-home"
             severity="danger"
             rounded
-            raised
             size="small"
             aria-label="Atrás"
             onClick={() => navigate("/menu-principal")}
@@ -620,7 +686,6 @@ export default function PurchaseOrdersModule() {
             onClick={() => setActive(1)}
             size="small"
             rounded
-            raised
           />
         </div>
       </div>
@@ -632,8 +697,8 @@ export default function PurchaseOrdersModule() {
       >
         <TabPanel 
           header={
-            <span style={{ display: "flex", alignItems: "center", fontSize: "1.1rem" }}>
-              <i className="pi pi-list" style={{ fontSize: "1.5rem", marginRight: "8px", color: "#004DA7" }}></i>
+            <span style={{ display: "flex", alignItems: "center", fontSize: "1.05rem" }}>
+              <i className="pi pi-list" style={{ fontSize: "1.3rem", marginRight: 8 }} />
               Listado
             </span>
           }
@@ -643,8 +708,8 @@ export default function PurchaseOrdersModule() {
 
         <TabPanel 
           header={
-            <span style={{ display: "flex", alignItems: "center", fontSize: "1.1rem" }}>
-              <i className="pi pi-file" style={{ fontSize: "1.5rem", marginRight: "8px", color: "#5DAA42" }}></i>
+            <span style={{ display: "flex", alignItems: "center", fontSize: "1.05rem" }}>
+              <i className="pi pi-file" style={{ fontSize: "1.3rem", marginRight: 8 }} />
               Crear OC
             </span>
           }
