@@ -327,7 +327,7 @@ export default function PurchaseRequestsModule() {
               }
             />
             <div className="flex gap-2">
-              <Button icon="pi pi-send" label="Enviar a revisión" onClick={() => handleEnviarRevision(s)} outlined className="btn-icon-large" />
+              <Button icon="pi pi-share-alt" label="Enviar a revisión" onClick={() => handleEnviarRevision(s)} outlined className="btn-icon-large" />
               <Button icon="pi pi-pencil" rounded text aria-label="Editar" />
               <Button icon="pi pi-trash" rounded text aria-label="Eliminar" severity="danger" />
             </div>
