@@ -1,0 +1,16 @@
+
+/* Ajustes más precisos para inputs y selects según la extensión esperada */
+.input-xs { width: 60px !important; }
+.input-sm { width: 110px !important; }
+.input-md { width: 180px !important; }
+.input-lg { width: 420px !important; }
+.input-xl { width: 600px !important; }
+
+/* Específicos para selects (dropdowns) si se requiere aún más control visual */
+.select-xs { width: 80px !important; }
+.select-sm { width: 130px !important; }
+.select-md { width: 170px !important; }
+.select-lg { width: 250px !important; }
+.select-xl { width: 340px !important; }
+
+/* Puedes ajustar los tamaños según necesidad */

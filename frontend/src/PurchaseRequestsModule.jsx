@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useRef } from "react";
+import "./inputSizes.css";
 import { Button } from "primereact/button";
 import { TabView, TabPanel } from "primereact/tabview";
 import { Card } from "primereact/card";
@@ -359,13 +360,13 @@ export default function PurchaseRequestsModule() {
   // === Tabs ===
   const ListadoTab = () => (
     <div className="flex flex-column gap-3">
-      <div className="flex gap-3">
-        <span className="p-input-icon-left flex-1">
-          <i className="pi pi-search" />
-          <InputText value={searchList} onChange={(e) => setSearchList(e.target.value)} placeholder="  Buscar por nombre, ID, propósito, estado…" className="w-full" />
-        </span>
-        <Button icon="pi pi-filter" label="Filter" outlined />
-      </div>
+        <div className="flex gap-3">
+          <span className="p-input-icon-left flex-1">
+            <i className="pi pi-search" />
+            <InputText value={searchList} onChange={(e) => setSearchList(e.target.value)} placeholder="  Buscar por nombre, ID, propósito, estado…" className="w-full input-sm" />
+          </span>
+          <Button icon="pi pi-filter" label="Filter" outlined />
+        </div>
 
       <DataView
         value={filteredList}
@@ -380,14 +381,15 @@ export default function PurchaseRequestsModule() {
   const CrearTab = () => (
     <div className="flex flex-column gap-3">
       <Card>
-        <div className="p-fluid grid formgrid">
+  <div className="p-fluid grid formgrid align-items-end" style={{gap: '0.8rem 1.5rem', marginBottom: '0.7rem'}}>
           <div className="field col-12 md:col-6">
             <label>Nombre de la solicitud *</label>
-            <InputText
-              value={encForm.SOL_Nombre}
-              onChange={(e) => setEncForm({ ...encForm, SOL_Nombre: e.target.value })}
-              placeholder="Ej. Adquisición de equipos"
-            />
+              <InputText
+                value={encForm.SOL_Nombre}
+                onChange={(e) => setEncForm({ ...encForm, SOL_Nombre: e.target.value })}
+                placeholder="Ej. Adquisición de equipos"
+                className="input-lg"
+              />
           </div>
 
           <div className="field col-12 md:col-3">
@@ -397,7 +399,7 @@ export default function PurchaseRequestsModule() {
               options={propositos.map(p => ({ label: p.PRP_Nombre, value: p.PRP_Proposito }))}
               onChange={(e) => setEncForm({ ...encForm, PRP_Proposito: e.value })}
               placeholder="Selecciona"
-              className="w-full"
+              className="select-xl"
               filter
             />
           </div>
@@ -409,7 +411,7 @@ export default function PurchaseRequestsModule() {
               options={justificaciones.map(j => ({ label: j.JUS_Nombre, value: j.JUS_Justificacion_Comercial }))}
               onChange={(e) => setEncForm({ ...encForm, JUS_Justificacion_Comercial: e.value })}
               placeholder="Selecciona"
-              className="w-full"
+              className="select-xl"
               filter
             />
           </div>
@@ -424,7 +426,7 @@ export default function PurchaseRequestsModule() {
                 { label: "Bajo", value: "Bajo" },
               ]}
               onChange={(e) => setEncForm({ ...encForm, SOL_Prioridad: e.value })}
-              className="w-full"
+              className="select-xs"
             />
           </div>
 
@@ -497,59 +499,60 @@ export default function PurchaseRequestsModule() {
               options={proveedores.map(p => ({ label: p.PRV_Nombre, value: p.PRV_Proveedor }))}
               onChange={(e) => setLineForm({ ...lineForm, PRV_Proveedor: e.value })}
               placeholder="Selecciona proveedor"
-              className="w-full"
+              className="select-xl"
               filter
             />
           </div>
-          <div className="field col-12 md:col-4">
+          <div className="field col-12 md:col-6 pr-4" style={{minWidth: '340px', marginBottom: '0'}}>
             <label>Producto/Servicio *</label>
             <InputText
               value={lineForm.DSC_Nombre_Producto}
               onChange={(e) => setLineForm({ ...lineForm, DSC_Nombre_Producto: e.target.value })}
               placeholder='Ej. Laptop 14”'
+              className="input-xl"
             />
           </div>
-          <div className="field col-12 md:col-4">
+          <div className="field col-12 md:col-2 pr-4" style={{minWidth: '170px', marginBottom: '0'}}>
             <label>Categoría *</label>
             <Dropdown
               value={lineForm.CCO_Categoria_Compra}
               options={categoriasCompra.map(c => ({ label: c.CCO_Nombre, value: c.CCO_Categoria_Compra }))}
               onChange={(e) => setLineForm({ ...lineForm, CCO_Categoria_Compra: e.value })}
               placeholder="Selecciona categoría"
-              className="w-full"
+              className="select-lg"
               filter
             />
           </div>
 
-          <div className="field col-12 md:col-3">
-            <label>Cantidad</label>
+          <div className="field col-6 md:col-1 mb-0 flex flex-column align-items-center justify-content-end" style={{minWidth: '90px', marginBottom: '0'}}>
+            <label className="mb-1">Cantidad</label>
             <InputNumber
               value={lineForm.DSC_Cantidad}
               onValueChange={(e) => setLineForm({ ...lineForm, DSC_Cantidad: e.value ?? 0 })}
               min={0}
-              className="w-full"
+              className="input-xs text-center"
             />
           </div>
-          <div className="field col-12 md:col-3">
-            <label>Precio Unitario</label>
+          <div className="field col-6 md:col-2 mb-0 flex flex-column align-items-center justify-content-end" style={{minWidth: '140px', marginBottom: '0'}}>
+            <label className="mb-1">Precio Unitario</label>
             <InputNumber
               value={lineForm.DSC_Precio_Unitario}
               onValueChange={(e) => setLineForm({ ...lineForm, DSC_Precio_Unitario: e.value ?? 0 })}
               mode="decimal"
               minFractionDigits={2}
-              className="w-full"
+              className="input-sm text-center"
             />
           </div>
-          <div className="field col-12 md:col-3">
-            <label>Moneda</label>
+          <div className="field col-6 md:col-2 mb-0 flex flex-column align-items-center justify-content-end" style={{minWidth: '120px', marginBottom: '0'}}>
+            <label className="mb-1">Moneda</label>
             <Dropdown
               value={lineForm.MON_Moneda}
               options={monedas.map(m => ({ label: `${m.MON_Nombre} (${m.codigo})`, value: m.MON_Moneda }))}
               onChange={(e) => setLineForm({ ...lineForm, MON_Moneda: e.value })}
-              className="w-full"
+              className="select-lg"
             />
           </div>
-          <div className="field col-12 md:col-3 flex align-items-end">
+          <div className="field col-6 md:col-1 mb-0 flex align-items-center justify-content-end" style={{minWidth: '110px', marginBottom: '0'}}>
             <Button icon="pi pi-plus" label="Agregar renglón" onClick={addLineaTemp} className="w-full" />
           </div>
         </div>
@@ -565,7 +568,6 @@ export default function PurchaseRequestsModule() {
           <div className="flex gap-2">
             <Button icon="pi pi-check" label="Guardar solicitud" onClick={handleSaveSolicitud} />
             <Button
-              icon="pi pi-times"
               label="Cancelar"
               outlined
               onClick={() => {
@@ -592,7 +594,7 @@ export default function PurchaseRequestsModule() {
       <div className="flex gap-3">
         <span className="p-input-icon-left flex-1">
           <i className="pi pi-search" />
-          <InputText value={searchApr} onChange={(e) => setSearchApr(e.target.value)} placeholder="  Buscar por solicitud / usuario / comentario" className="w-full" />
+                <InputText value={searchApr} onChange={(e) => setSearchApr(e.target.value)} placeholder="  Buscar por solicitud / usuario / comentario" className="w-full input-sm" />
         </span>
       </div>
 
