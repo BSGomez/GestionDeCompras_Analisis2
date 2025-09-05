@@ -440,8 +440,11 @@ export default function PurchaseRequestsModule() {
               mode="advanced"
               customUpload
               chooseLabel="Seleccionar archivo"
+              chooseIcon="pi pi-upload"
               uploadLabel="Guardar (no sube)"
+              uploadIcon="pi pi-check-circle"
               cancelLabel="Cancelar"
+              cancelIcon="pi pi-times-circle"
               accept=".pdf,.jpg,.jpeg,.png"
               maxFileSize={10 * 1024 * 1024}
               multiple={false}
@@ -467,7 +470,7 @@ export default function PurchaseRequestsModule() {
                 </div>
                 <div className="flex gap-2">
                   <Button
-                    icon="pi pi-eye"
+                    icon="pi pi-file-pdf"
                     rounded
                     text
                     className="btn-icon-large"
@@ -475,7 +478,7 @@ export default function PurchaseRequestsModule() {
                     aria-label="Ver adjunto"
                   />
                   <Button
-                    icon="pi pi-ban"
+                    icon="pi pi-trash"
                     rounded
                     text
                     severity="danger"
@@ -569,9 +572,9 @@ export default function PurchaseRequestsModule() {
         <div className="flex align-items-center justify-content-between">
           <div className="font-medium">Total estimado: {totalTemp}</div>
           <div className="flex gap-2">
-            <Button icon="pi pi-save" label="Guardar solicitud" onClick={handleSaveSolicitud} className="btn-icon-large" />
+            <Button icon="pi pi-check-circle" label="Guardar solicitud" onClick={handleSaveSolicitud} className="btn-icon-large" />
             <Button
-              icon="pi pi-ban"
+              icon="pi pi-times-circle"
               label="Cancelar"
               outlined
               className="btn-icon-large"
