@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom"; // 👈 para navegar
 import { Button } from "primereact/button";
 import { TabView, TabPanel } from "primereact/tabview";
 import { Card } from "primereact/card";
@@ -85,6 +86,7 @@ const mockDetalleSolicitudes = [
 /* ===================== COMPONENTE ===================== */
 export default function PurchaseOrdersModule() {
   const [active, setActive] = useState(0);
+  const navigate = useNavigate();
 
   // Estado principal
   const [ocs, setOcs] = useState(mockOC);
@@ -96,7 +98,7 @@ export default function PurchaseOrdersModule() {
   const [formasPago] = useState(mockFormasPago);
   const [condiciones] = useState(mockCondiciones);
 
-  // Mapas memo (sin helpers volátiles)
+  // Mapas memo
   const proveedoresById = useMemo(() => new Map(proveedores.map(p => [p.PRV_Proveedor, p])), [proveedores]);
   const monedasById     = useMemo(() => new Map(monedas.map(m => [m.MON_Moneda, m])), [monedas]);
   const formasById      = useMemo(() => new Map(formasPago.map(f => [f.FPG_Forma_Pago, f])), [formasPago]);
@@ -128,18 +130,17 @@ export default function PurchaseOrdersModule() {
     FPG_Forma_Pago: null,
     CPR_Condicion_Proveedor: null,
     OC_Observaciones: "",
-    // OC_Estado: siempre Borrador al crear
   });
 
   // Formulario renglón
   const [lineForm, setLineForm] = useState({
     DSC_Nombre_Producto: "",
-    DSC_Cantidad: 1,
-    DSC_Precio_Unitario: 0,
+    DSC_Cantidad: 1,           // default 1
+    DSC_Precio_Unitario: 0.01, // mínimo positivo
     MON_Moneda: 1,
   });
 
-  // Renglones temporales antes de guardar
+  // Renglones temporales
   const [lineasTemp, setLineasTemp] = useState([]);
 
   const totalTemp = useMemo(
@@ -147,7 +148,7 @@ export default function PurchaseOrdersModule() {
     [lineasTemp]
   );
 
-  // Totales por OC creadas
+  // Totales por OC
   const totalPorOC = useMemo(() => {
     const map = new Map();
     for (const d of detalles) {
@@ -174,7 +175,6 @@ export default function PurchaseOrdersModule() {
       MON_Moneda: f.MON_Moneda,
     }));
     setLineasTemp(prev => [...convertidas, ...prev]);
-    // Sugerimos setear el proveedor para la OC si no está definido
     if (!encForm.PRV_Proveedor) {
       setEncForm(prev => ({ ...prev, PRV_Proveedor: importSOLC.PRV_Proveedor }));
     }
@@ -182,26 +182,33 @@ export default function PurchaseOrdersModule() {
 
   // Acciones
   const addLineaTemp = () => {
-    if (!lineForm.DSC_Nombre_Producto) return;
+    if (!lineForm.DSC_Nombre_Producto?.trim()) return;
+
+    const qty = Math.max(1, Number(lineForm.DSC_Cantidad) || 1);
+    const pu  = Math.max(0.01, Number(lineForm.DSC_Precio_Unitario) || 0.01);
+
     const linea = {
       id: Date.now(),
-      DSC_Nombre_Producto: lineForm.DSC_Nombre_Producto,
-      DSC_Cantidad: Number(lineForm.DSC_Cantidad) || 0,
-      DSC_Precio_Unitario: Number(lineForm.DSC_Precio_Unitario) || 0,
+      DSC_Nombre_Producto: lineForm.DSC_Nombre_Producto.trim(),
+      DSC_Cantidad: qty,
+      DSC_Precio_Unitario: pu,
       MON_Moneda: lineForm.MON_Moneda || encForm.MON_Moneda || 1,
     };
     setLineasTemp(prev => [linea, ...prev]);
-    setLineForm({ DSC_Nombre_Producto: "", DSC_Cantidad: 1, DSC_Precio_Unitario: 0, MON_Moneda: encForm.MON_Moneda || 1 });
+    setLineForm({ DSC_Nombre_Producto: "", DSC_Cantidad: 1, DSC_Precio_Unitario: 0.01, MON_Moneda: encForm.MON_Moneda || 1 });
   };
 
   const removeLineaTemp = (id) => setLineasTemp(prev => prev.filter(l => l.id !== id));
 
   const handleSaveOC = () => {
-    // Validaciones mínimas
     if (!encForm.PRV_Proveedor || !encForm.MON_Moneda || !encForm.FPG_Forma_Pago || !encForm.CPR_Condicion_Proveedor) return;
     if (lineasTemp.length === 0) return;
 
-    // 1) Crear OC (Borrador)
+    const validas = lineasTemp.filter(l => (l.DSC_Cantidad || 0) >= 1 && (l.DSC_Precio_Unitario || 0) > 0);
+    if (validas.length === 0) return;
+
+    const total = validas.reduce((acc, r) => acc + r.DSC_Cantidad * r.DSC_Precio_Unitario, 0);
+
     const nuevaOC = {
       OC_Orden: Date.now(),
       PRV_Proveedor: encForm.PRV_Proveedor,
@@ -211,23 +218,21 @@ export default function PurchaseOrdersModule() {
       OC_Fecha_Emision: new Date().toISOString().slice(0, 10),
       OC_Observaciones: encForm.OC_Observaciones || "",
       OC_Estado: ESTADOS_OC.BORRADOR,
-      OC_Total: totalTemp,
+      OC_Total: total,
     };
     setOcs(prev => [nuevaOC, ...prev]);
 
-    // 2) Crear detalle
-    const nuevosDet = lineasTemp.map(l => ({
+    const nuevosDet = validas.map(l => ({
       DSC_OC: Date.now() + Math.floor(Math.random() * 1000),
       OC_Orden: nuevaOC.OC_Orden,
       DSC_Nombre_Producto: l.DSC_Nombre_Producto,
       DSC_Cantidad: l.DSC_Cantidad,
       DSC_Precio_Unitario: l.DSC_Precio_Unitario,
-      DSC_Monto_Neto: (l.DSC_Cantidad || 0) * (l.DSC_Precio_Unitario || 0),
+      DSC_Monto_Neto: l.DSC_Cantidad * l.DSC_Precio_Unitario,
       MON_Moneda: l.MON_Moneda,
     }));
     setDetalles(prev => [...nuevosDet, ...prev]);
 
-    // Reset
     setEncForm({ PRV_Proveedor: null, MON_Moneda: 1, FPG_Forma_Pago: null, CPR_Condicion_Proveedor: null, OC_Observaciones: "" });
     setLineasTemp([]);
     setImportSOLC({ SOL_Solicitud: null, PRV_Proveedor: null });
@@ -238,6 +243,10 @@ export default function PurchaseOrdersModule() {
     setOcs(prev => prev.map(x => x.OC_Orden === o.OC_Orden ? { ...x, OC_Estado: ESTADOS_OC.EN_REVISION } : x));
   };
 
+  const handleVolverBorrador = (o) => {
+    setOcs(prev => prev.map(x => x.OC_Orden === o.OC_Orden ? { ...x, OC_Estado: ESTADOS_OC.BORRADOR } : x));
+  };
+
   // Helpers UI
   const estadoText = (val) => estadosOcCatalog.find(e => e.value === val)?.label || "—";
   const estadoSeverity = (val) =>
@@ -246,7 +255,7 @@ export default function PurchaseOrdersModule() {
     val === ESTADOS_OC.EN_REVISION ? "warning" :
     val === ESTADOS_OC.CERRADA ? "secondary" : "info";
 
-  // Templates
+  /* ===================== LISTADO / CARD ===================== */
   const OCCard = (o) => {
     const prv = proveedoresById.get(o.PRV_Proveedor)?.PRV_Nombre || "—";
     const mon = monedasById.get(o.MON_Moneda)?.codigo || "—";
@@ -255,24 +264,70 @@ export default function PurchaseOrdersModule() {
     const total = totalPorOC.get(o.OC_Orden) ?? o.OC_Total ?? 0;
 
     return (
-      <Card className="p-3">
-        <div className="flex justify-content-between align-items-start gap-3">
-          <div>
-            <div className="font-medium text-lg">OC #{o.OC_Orden} — {prv}</div>
-            <div className="text-500 text-sm">Fecha: {o.OC_Fecha_Emision || "—"} · Moneda: {mon}</div>
-            <div className="text-600 text-sm mt-1">Pago: {fpg} · Condición: {cnd}</div>
-            <div className="text-600 text-sm mt-1">Obs: {o.OC_Observaciones || "—"}</div>
-            <div className="font-medium mt-2">Total: {total}</div>
-          </div>
-          <div className="flex align-items-center gap-3">
-            <Tag value={estadoText(o.OC_Estado)} severity={estadoSeverity(o.OC_Estado)} />
-            <div className="flex gap-2">
-              {o.OC_Estado === ESTADOS_OC.BORRADOR && (
-                <Button icon="pi pi-send" label="Enviar a aprobación" outlined onClick={() => handleEnviarRevision(o)} />
-              )}
-              <Button icon="pi pi-pencil" rounded text aria-label="Editar" />
-              <Button icon="pi pi-trash" rounded text severity="danger" aria-label="Eliminar" />
+      <Card className="po-card p-3">
+        <div className="flex flex-column gap-2">
+          {/* Línea superior: Título + estado al lado del proveedor */}
+          <div className="flex align-items-center gap-2 flex-wrap">
+            <div className="font-medium text-lg">
+              OC #{o.OC_Orden} — {prv}
             </div>
+            {/* Estado inline, con reloj cuando es EN_REVISION */}
+            <Tag
+              value={estadoText(o.OC_Estado)}
+              severity={estadoSeverity(o.OC_Estado)}
+              icon={o.OC_Estado === ESTADOS_OC.EN_REVISION ? "pi pi-clock" : undefined}
+              className="po-chip-inline"
+              rounded
+            />
+          </div>
+
+          {/* Resto de info */}
+          <div className="text-500 text-sm">
+            Fecha: {o.OC_Fecha_Emision || "—"} · Moneda: {mon}
+          </div>
+          <div className="text-600 text-sm">Pago: {fpg} · Condición: {cnd}</div>
+          <div className="text-600 text-sm">Obs: {o.OC_Observaciones || "—"}</div>
+          <div className="font-medium mt-1">Total: {total}</div>
+
+          {/* Acciones */}
+          <div className="flex gap-2 flex-wrap justify-content-end pt-2">
+            {o.OC_Estado === ESTADOS_OC.BORRADOR && (
+              <Button
+                icon="pi pi-send"
+                label="Enviar a aprobación"
+                severity="help"
+                raised
+                rounded
+                onClick={() => handleEnviarRevision(o)}
+              />
+            )}
+
+            {o.OC_Estado === ESTADOS_OC.EN_REVISION && (
+              <Button
+                icon="pi pi-history"
+                label="Borrador"
+                severity="danger"
+                raised
+                rounded
+                onClick={() => handleVolverBorrador(o)}
+                tooltip="Volver a borrador"
+              />
+            )}
+
+            <Button
+              icon="pi pi-pencil"
+              label="Editar"
+              rounded
+              raised
+              severity="secondary"
+            />
+            <Button
+              icon="pi pi-trash"
+              label="Eliminar"
+              rounded
+              raised
+              severity="danger"
+            />
           </div>
         </div>
       </Card>
@@ -292,21 +347,26 @@ export default function PurchaseOrdersModule() {
           <span className="text-600">Cant: {l.DSC_Cantidad}</span>
           <span className="text-600">PU: {l.DSC_Precio_Unitario}</span>
           <span className="font-medium">Neto: {neto}</span>
-          <Button icon="pi pi-times" rounded text severity="danger" onClick={() => removeLineaTemp(l.id)} />
+          <Button icon="pi pi-times" rounded text severity="danger" size="small" onClick={() => removeLineaTemp(l.id)} />
         </div>
       </div>
     );
   };
 
-  // Tabs
+  /* ===================== TABS ===================== */
   const ListadoTab = () => (
     <div className="flex flex-column gap-3">
-      <div className="flex gap-3">
+      <div className="flex gap-3 align-items-center">
         <span className="p-input-icon-left flex-1">
           <i className="pi pi-search" />
-          <InputText value={searchList} onChange={(e) => setSearchList(e.target.value)} placeholder="  Buscar por OC, proveedor, estado, moneda…" className="w-full" />
+          <InputText
+            value={searchList}
+            onChange={(e) => setSearchList(e.target.value)}
+            placeholder="  Buscar por OC, proveedor, estado, moneda…"
+            className="w-full"
+          />
         </span>
-        <Button icon="pi pi-filter" label="Filter" outlined />
+        <Button icon="pi pi-filter" label="Filtrar" outlined />
       </div>
 
       <DataView
@@ -322,54 +382,64 @@ export default function PurchaseOrdersModule() {
   const CrearOCTab = () => (
     <div className="flex flex-column gap-3">
       <Card>
-        <div className="p-fluid grid formgrid">
-          <div className="field col-12 md:col-4">
-            <label>Proveedor *</label>
-            <Dropdown
-              value={encForm.PRV_Proveedor}
-              options={proveedores.map(p => ({ label: p.PRV_Nombre, value: p.PRV_Proveedor }))}
-              onChange={(e) => setEncForm({ ...encForm, PRV_Proveedor: e.value })}
-              placeholder="Selecciona proveedor"
-              className="w-full"
-              filter
-            />
-          </div>
-          <div className="field col-12 md:col-2">
-            <label>Moneda *</label>
-            <Dropdown
-              value={encForm.MON_Moneda}
-              options={monedas.map(m => ({ label: `${m.MON_Nombre} (${m.codigo})`, value: m.MON_Moneda }))}
-              onChange={(e) => setEncForm({ ...encForm, MON_Moneda: e.value })}
-              className="w-full"
-            />
-          </div>
-          <div className="field col-12 md:col-3">
-            <label>Forma de Pago *</label>
-            <Dropdown
-              value={encForm.FPG_Forma_Pago}
-              options={formasPago.map(f => ({ label: f.FPG_Nombre, value: f.FPG_Forma_Pago }))}
-              onChange={(e) => setEncForm({ ...encForm, FPG_Forma_Pago: e.value })}
-              className="w-full"
-              filter
-            />
-          </div>
-          <div className="field col-12 md:col-3">
-            <label>Condición *</label>
-            <Dropdown
-              value={encForm.CPR_Condicion_Proveedor}
-              options={condiciones.map(c => ({ label: c.nombre, value: c.CPR_Condicion_Proveedor }))}
-              onChange={(e) => setEncForm({ ...encForm, CPR_Condicion_Proveedor: e.value })}
-              className="w-full"
-              filter
-            />
-          </div>
-          <div className="field col-12">
-            <label>Observaciones</label>
-            <InputText
-              value={encForm.OC_Observaciones}
-              onChange={(e) => setEncForm({ ...encForm, OC_Observaciones: e.target.value })}
-              placeholder="Notas / términos adicionales"
-            />
+        {/* Contenedor encabezado gris */}
+        <div
+          className="p-3 border-round"
+          style={{ background: "#f5f6f7", border: "1px solid #e6e7e9" }}
+        >
+          <div className="grid formgrid align-items-end">
+            {/* Fila 1: Proveedor, Moneda, Condición, Forma de Pago */}
+            <div className="field col-12 md:col-3">
+              <label>Proveedor *</label>
+              <Dropdown
+                value={encForm.PRV_Proveedor}
+                options={proveedores.map(p => ({ label: p.PRV_Nombre, value: p.PRV_Proveedor }))}
+                onChange={(e) => setEncForm({ ...encForm, PRV_Proveedor: e.value })}
+                className="w-full"
+                placeholder="Proveedor"
+                filter
+              />
+            </div>
+            <div className="field col-6 md:col-2">
+              <label>Moneda *</label>
+              <Dropdown
+                value={encForm.MON_Moneda}
+                options={monedas.map(m => ({ label: m.codigo, value: m.MON_Moneda }))}
+                onChange={(e) => setEncForm({ ...encForm, MON_Moneda: e.value })}
+                className="w-full"
+              />
+            </div>
+            <div className="field col-6 md:col-3">
+              <label>Condición *</label>
+              <Dropdown
+                value={encForm.CPR_Condicion_Proveedor}
+                options={condiciones.map(c => ({ label: c.nombre, value: c.CPR_Condicion_Proveedor }))}
+                onChange={(e) => setEncForm({ ...encForm, CPR_Condicion_Proveedor: e.value })}
+                className="w-full"
+                filter
+              />
+            </div>
+            <div className="field col-12 md:col-4">
+              <label>Forma de Pago *</label>
+              <Dropdown
+                value={encForm.FPG_Forma_Pago}
+                options={formasPago.map(f => ({ label: f.FPG_Nombre, value: f.FPG_Forma_Pago }))}
+                onChange={(e) => setEncForm({ ...encForm, FPG_Forma_Pago: e.value })}
+                className="w-full"
+                filter
+              />
+            </div>
+
+            {/* Fila 2: Observaciones toda la línea */}
+            <div className="field col-12">
+              <label>Observaciones</label>
+              <InputText
+                value={encForm.OC_Observaciones}
+                onChange={(e) => setEncForm({ ...encForm, OC_Observaciones: e.target.value })}
+                placeholder="Notas / términos adicionales"
+                className="w-full"
+              />
+            </div>
           </div>
         </div>
       </Card>
@@ -378,9 +448,9 @@ export default function PurchaseOrdersModule() {
         <div className="font-medium mb-3">Renglones</div>
 
         {/* Importar desde Solicitud (opcional) */}
-        <div className="p-fluid grid formgrid">
+        <div className="p-fluid grid formgrid align-items-end">
           <div className="field col-12 md:col-5">
-            <label>Importar de Solicitud (opcional)</label>
+            <label>Importar de Solicitud de Compra</label>
             <Dropdown
               value={importSOLC.SOL_Solicitud}
               options={opcionesSOLC}
@@ -401,13 +471,13 @@ export default function PurchaseOrdersModule() {
               filter
             />
           </div>
-          <div className="field col-12 md:col-2 flex align-items-end">
-            <Button icon="pi pi-download" label="Importar" className="w-full" onClick={handleImportar} />
+          <div className="field col-12 md:col-2 flex md:justify-content-end">
+            <Button icon="pi pi-download" label="Importar" outlined size="small" onClick={handleImportar} />
           </div>
         </div>
 
         {/* Alta manual de renglones */}
-        <div className="p-fluid grid formgrid">
+        <div className="p-fluid grid formgrid align-items-end">
           <div className="field col-12 md:col-5">
             <label>Producto/Servicio *</label>
             <InputText
@@ -416,36 +486,52 @@ export default function PurchaseOrdersModule() {
               placeholder="Ej. Laptop 14”"
             />
           </div>
-          <div className="field col-12 md:col-2">
+          <div className="field col-6 md:col-2">
             <label>Cantidad</label>
             <InputNumber
               value={lineForm.DSC_Cantidad}
-              onValueChange={(e) => setLineForm({ ...lineForm, DSC_Cantidad: e.value ?? 0 })}
-              min={0}
-              className="w-full"
+              onValueChange={(e) => setLineForm({ ...lineForm, DSC_Cantidad: Math.max(1, e.value ?? 1) })}
+              min={1}
+              step={1}
+              showButtons
+              buttonLayout="horizontal"
+              decrementButtonIcon="pi pi-minus"
+              incrementButtonIcon="pi pi-plus"
             />
           </div>
-          <div className="field col-12 md:col-3">
+          <div className="field col-6 md:col-3">
             <label>Precio Unitario</label>
             <InputNumber
               value={lineForm.DSC_Precio_Unitario}
-              onValueChange={(e) => setLineForm({ ...lineForm, DSC_Precio_Unitario: e.value ?? 0 })}
+              onValueChange={(e) => setLineForm({ ...lineForm, DSC_Precio_Unitario: Math.max(0.01, e.value ?? 0.01) })}
+              min={0.01}
               mode="decimal"
               minFractionDigits={2}
-              className="w-full"
+              maxFractionDigits={2}
             />
           </div>
-          <div className="field col-12 md:col-2">
+          <div className="field col-6 md:col-2">
             <label>Moneda</label>
             <Dropdown
               value={lineForm.MON_Moneda}
-              options={monedas.map(m => ({ label: `${m.MON_Nombre} (${m.codigo})`, value: m.MON_Moneda }))}
+              options={monedas.map(m => ({ label: m.codigo, value: m.MON_Moneda }))}
               onChange={(e) => setLineForm({ ...lineForm, MON_Moneda: e.value })}
-              className="w-full"
             />
           </div>
-          <div className="field col-12 md:col-12 flex align-items-end">
-            <Button icon="pi pi-plus" label="Agregar renglón" onClick={addLineaTemp} />
+
+          {/* Agregar renglón compacto (no 100%) */}
+          <div className="field col-12 md:col-12 flex justify-content-end">
+            <Button
+              icon="pi pi-plus-circle"
+              label="Agregar renglón"
+              size="small"
+              rounded
+              raised
+              severity="help"
+              onClick={addLineaTemp}
+              className="btn-auto"
+              style={{ width: "auto" }}
+            />
           </div>
         </div>
 
@@ -458,11 +544,13 @@ export default function PurchaseOrdersModule() {
         <div className="flex align-items-center justify-content-between">
           <div className="font-medium">Total estimado: {totalTemp}</div>
           <div className="flex gap-2">
-            <Button icon="pi pi-check" label="Guardar OC" onClick={handleSaveOC} />
+            <Button icon="pi pi-save" label="Guardar OC" raised severity="success" onClick={handleSaveOC} />
             <Button
               icon="pi pi-times"
               label="Cancelar"
+              raised
               outlined
+              severity="secondary"
               onClick={() => {
                 setEncForm({ PRV_Proveedor: null, MON_Moneda: 1, FPG_Forma_Pago: null, CPR_Condicion_Proveedor: null, OC_Observaciones: "" });
                 setLineasTemp([]);
@@ -478,19 +566,89 @@ export default function PurchaseOrdersModule() {
   // Render
   return (
     <div>
-      <div className="page-header">
+      {/* Estilos: encabezado, tarjetas de listado y chip inline */}
+      <style>{`
+        .page-header-bar {
+          background: #f5f6f7;
+          border: 1px solid #e6e7e9;
+          border-radius: 12px;
+          padding: 12px 16px;
+          margin-bottom: 16px;
+        }
+        .btn-auto.p-button { width: auto !important; padding-inline: 0.75rem !important; }
+
+        .po-card {
+          border-left: 4px solid #3b82f6;
+          transition: box-shadow .2s ease, transform .1s ease;
+        }
+        .po-card:hover {
+          box-shadow: 0 6px 18px rgba(0,0,0,.08);
+          transform: translateY(-1px);
+        }
+
+        /* Chip de estado inline (junto al proveedor) */
+        .po-chip-inline {
+          margin-left: .25rem;
+          padding: .15rem .5rem;
+          line-height: 1;
+          font-size: .8rem;
+          box-shadow: 0 2px 6px rgba(0,0,0,.06);
+          font-weight: 600;
+        }
+      `}</style>
+
+      <div className="page-header-bar flex align-items-center justify-content-between">
         <div>
-          <h2 className="title">Órdenes de Compra</h2>
-          <p className="subtitle">Crear, listar y enviar a aprobación</p>
+          <h2 className="title m-0">Órdenes de Compra</h2>
+          <p className="subtitle m-0">Crear, listar y enviar a aprobación</p>
         </div>
-        <Button icon="pi pi-plus" label="Nueva OC" className="btn-pill-dark" onClick={() => setActive(1)} />
+        <div className="flex gap-2">
+          {/* Botón Atrás: navega al Menú Principal */}
+          <Button
+            icon="pi pi-home"
+            severity="danger"
+            rounded
+            raised
+            size="small"
+            aria-label="Atrás"
+            onClick={() => navigate("/menu-principal")}
+            tooltip="Regresar al menú principal"
+          />
+          <Button
+            icon="pi pi-plus"
+            label="Nueva OC"
+            onClick={() => setActive(1)}
+            size="small"
+            rounded
+            raised
+          />
+        </div>
       </div>
 
-      <TabView className="pill-tabs" activeIndex={active} onTabChange={(e) => setActive(e.index)}>
-        <TabPanel header="Listado">
+      <TabView 
+        className="pill-tabs" 
+        activeIndex={active} 
+        onTabChange={(e) => setActive(e.index)}
+      >
+        <TabPanel 
+          header={
+            <span style={{ display: "flex", alignItems: "center", fontSize: "1.1rem" }}>
+              <i className="pi pi-list" style={{ fontSize: "1.5rem", marginRight: "8px", color: "#004DA7" }}></i>
+              Listado
+            </span>
+          }
+        >
           <ListadoTab />
         </TabPanel>
-        <TabPanel header="Crear OC">
+
+        <TabPanel 
+          header={
+            <span style={{ display: "flex", alignItems: "center", fontSize: "1.1rem" }}>
+              <i className="pi pi-file" style={{ fontSize: "1.5rem", marginRight: "8px", color: "#5DAA42" }}></i>
+              Crear OC
+            </span>
+          }
+        >
           <CrearOCTab />
         </TabPanel>
       </TabView>
