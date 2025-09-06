@@ -385,7 +385,7 @@ export default function PurchaseOrdersModule() {
         >
           <div className="grid formgrid align-items-end">
             {/* Fila 1: Proveedor, Moneda, Condición, Forma de Pago */}
-            <div className="field col-12 md:col-3">
+            <div className="field col-12 md:col-2">
               <label>Proveedor *</label>
               <Dropdown
                 value={encForm.PRV_Proveedor}
@@ -396,7 +396,7 @@ export default function PurchaseOrdersModule() {
                 filter
               />
             </div>
-            <div className="field col-6 md:col-2">
+            <div className="field col-6 md:col-1">
               <label>Moneda *</label>
               <Dropdown
                 value={encForm.MON_Moneda}
@@ -405,7 +405,7 @@ export default function PurchaseOrdersModule() {
                 className="w-full"
               />
             </div>
-            <div className="field col-6 md:col-3">
+            <div className="field col-6 md:col-2">
               <label>Condición *</label>
               <Dropdown
                 value={encForm.CPR_Condicion_Proveedor}
@@ -415,7 +415,7 @@ export default function PurchaseOrdersModule() {
                 filter
               />
             </div>
-            <div className="field col-12 md:col-4">
+            <div className="field col-12 md:col-3">
               <label>Forma de Pago *</label>
               <Dropdown
                 value={encForm.FPG_Forma_Pago}
@@ -456,17 +456,7 @@ export default function PurchaseOrdersModule() {
               filter
             />
           </div>
-          <div className="field col-12 md:col-5">
-            <label>Proveedor de la solicitud</label>
-            <Dropdown
-              value={importSOLC.PRV_Proveedor}
-              options={opcionesPrvImport}
-              onChange={(e) => setImportSOLC(prev => ({ ...prev, PRV_Proveedor: e.value }))}
-              placeholder="Proveedor a importar"
-              className="w-full"
-              filter
-            />
-          </div>
+          
           <div className="field col-12 md:col-2 flex md:justify-content-end">
             <Button icon="pi pi-download" label="Importar" outlined size="small" onClick={handleImportar} />
           </div>
@@ -482,7 +472,7 @@ export default function PurchaseOrdersModule() {
               placeholder="Ej. Laptop 14”"
             />
           </div>
-          <div className="field col-6 md:col-2">
+          <div className="field col-6 md:col-1">
             <label>Cantidad</label>
             <InputNumber
               value={lineForm.DSC_Cantidad}
@@ -495,7 +485,7 @@ export default function PurchaseOrdersModule() {
               incrementButtonIcon="pi pi-plus"
             />
           </div>
-          <div className="field col-6 md:col-3">
+          <div className="field col-6 md:col-1">
             <label>Precio Unitario</label>
             <InputNumber
               value={lineForm.DSC_Precio_Unitario}

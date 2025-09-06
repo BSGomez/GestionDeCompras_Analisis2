@@ -182,8 +182,8 @@ export default function BodegaModule() {
             <div className="text-600 text-sm mt-1">Responsable: {emp?.nombre || "—"}</div>
           </div>
           <div className="flex gap-2 flex-wrap">
-            <Button icon="pi pi-pencil" label="Editar" rounded raised severity="secondary" />
-            <Button icon="pi pi-trash" label="Eliminar" rounded raised severity="danger" />
+            <Button icon="pi pi-pencil" label="Editar" rounded severity="secondary" />
+            <Button icon="pi pi-trash" label="Eliminar" rounded severity="danger" />
           </div>
         </div>
       </Card>
@@ -245,7 +245,8 @@ export default function BodegaModule() {
       </div>
 
       <Card>
-        <div className="p-3 border-round" style={{ background: "#f5f6f7", border: "1px solid #e6e7e9" }}>
+        {/* Contenedor encabezado gris (mismo estilo que OC) */}
+        <div className="p-3 border-round" style={{ background: "var(--surface-alt)", border: "1px solid #e6e7e9" }}>
           <div className="grid formgrid align-items-end">
             <div className="field col-12 md:col-3">
               <label>Nombre de Bodega *</label>
@@ -267,8 +268,8 @@ export default function BodegaModule() {
               />
             </div>
             <div className="field col-12 md:col-3 flex justify-content-end gap-2">
-              <Button icon="pi pi-save" label="Guardar Bodega" raised severity="success" onClick={handleSaveBodega} />
-              <Button icon="pi pi-times" label="Cancelar" raised outlined severity="secondary" onClick={() => setBodForm({ BOD_Nombre: "", BOD_Ubicacion: "", EMP_Responsable: null })} />
+              <Button icon="pi pi-save" label="Guardar Bodega" severity="success" onClick={handleSaveBodega} />
+              <Button icon="pi pi-times" label="Cancelar" outlined severity="secondary" onClick={() => setBodForm({ BOD_Nombre: "", BOD_Ubicacion: "", EMP_Responsable: null })} />
             </div>
           </div>
         </div>
@@ -293,34 +294,28 @@ export default function BodegaModule() {
         </div>
 
         <Card>
-          <div className="p-3 border-round" style={{ background: "#f5f6f7", border: "1px solid #e6e7e9" }}>
+          <div className="p-3 border-round" style={{ background: "var(--surface-alt)", border: "1px solid #e6e7e9" }}>
             <div className="grid formgrid align-items-end">
-              <div className="field col-12 md:col-3">
+              <div className="field col-6 md:col-2">
                 <label>Orden de Compra *</label>
                 <Dropdown value={recForm.OC_Orden} options={opcionesOC}
                           onChange={(e) => setRecForm({ ...recForm, OC_Orden: e.value, DSC_OC: null })}
                           placeholder="OC" className="w-full" filter />
               </div>
-              <div className="field col-12 md:col-3">
+              <div className="field col-6 md:col-2">
                 <label>Renglón *</label>
                 <Dropdown value={recForm.DSC_OC} options={opcionesDSC}
                           onChange={(e) => setRecForm({ ...recForm, DSC_OC: e.value })}
                           placeholder="Renglón" className="w-full" filter />
               </div>
-              <div className="field col-12 md:col-3">
+              <div className="field col-6 md:col-2">
                 <label>Bodega *</label>
                 <Dropdown value={recForm.BOD_Bodega}
                           options={bodegas.map(b => ({ label: b.BOD_Nombre, value: b.BOD_Bodega }))}
                           onChange={(e) => setRecForm({ ...recForm, BOD_Bodega: e.value })}
                           placeholder="Bodega" className="w-full" filter />
               </div>
-              <div className="field col-12 md:col-3">
-                <label>Cantidad a recibir *</label>
-                <InputNumber value={recForm.REC_Cantidad_Recibida}
-                             onValueChange={(e) => setRecForm({ ...recForm, REC_Cantidad_Recibida: Math.max(1, e.value ?? 1) })}
-                             min={1} step={1} showButtons buttonLayout="horizontal"
-                             decrementButtonIcon="pi pi-minus" incrementButtonIcon="pi pi-plus" />
-              </div>
+              
 
               <div className="field col-12">
                 <label>Observaciones</label>
@@ -329,7 +324,7 @@ export default function BodegaModule() {
                            placeholder="Notas de recepción" className="w-full" />
               </div>
 
-              <div className="field col-12 md:col-4">
+              <div className="field col-12 md:col-1">
                 <label>Recibido por *</label>
                 <Dropdown value={recForm.USR_Recibido_Por}
                           options={mockUsers.map(u => ({ label: u.alias, value: u.USR_Usuario }))}
@@ -337,8 +332,8 @@ export default function BodegaModule() {
                           placeholder="Usuario" className="w-full" filter />
               </div>
               <div className="field col-12 md:col-8 flex justify-content-end gap-2">
-                <Button icon="pi pi-check" label="Registrar Recepción" raised severity="success" onClick={handleSaveRecepcion} />
-                <Button icon="pi pi-times" label="Cancelar" raised outlined severity="secondary"
+                <Button icon="pi pi-check" label="Registrar Recepción" severity="success" onClick={handleSaveRecepcion} />
+                <Button icon="pi pi-times" label="Cancelar" outlined severity="secondary"
                         onClick={() => setRecForm({ OC_Orden: null, DSC_OC: null, BOD_Bodega: null, REC_Cantidad_Recibida: 1, REC_Observaciones: "", USR_Recibido_Por: null })} />
               </div>
             </div>
@@ -367,27 +362,108 @@ export default function BodegaModule() {
 
   // ===== Render =====
   return (
-    <div>
+    <div className="pill-ui page-wrapper">
       <style>{`
+        :root{
+          --bg-enterprise: #f0f2f5;   /* fondo empresarial */
+          --surface-alt:   #ffe46cff; /* superficie suave (igual al módulo OC) */
+          --brand-primary: #004DA7;   /* azul corporativo */
+          --brand-accent:  #5DAA42;   /* verde corporativo */
+        }
+
+        /* Fondo empresarial a toda la vista */
+        .page-wrapper {
+          background: var(--bg-enterprise);
+          min-height: 100vh;
+          padding: 1rem;
+        }
+
+        /* Barra de encabezado igual al diseño registrado */
         .page-header-bar {
-          background: #f5f6f7;
+          background: var(--surface-alt);
           border: 1px solid #e6e7e9;
-          border-radius: 12px;
+          border-radius: 14px;
           padding: 12px 16px;
           margin-bottom: 16px;
         }
+
+        /* Botón tamaño automático compacto */
+        .btn-auto.p-button { width: auto !important; padding-inline: 0.75rem !important; }
+
+        /* Tarjetas con borde lateral y hover */
         .wh-card {
           border-left: 4px solid #3b82f6;
           transition: box-shadow .2s ease, transform .1s ease;
+          border-radius: 16px;
+          background: white;
         }
         .wh-card:hover {
           box-shadow: 0 6px 18px rgba(0,0,0,.08);
           transform: translateY(-1px);
         }
+
+        /* Chip redondo con ligera sombra */
         .wh-chip {
           box-shadow: 0 2px 6px rgba(0,0,0,.06);
           font-weight: 600;
+          border-radius: 9999px;
         }
+
+        /* ======= PILL / MEDIO CIRCULAR MÁS DELGADO ======= */
+        .pill-ui .p-inputtext,
+        .pill-ui .p-dropdown,
+        .pill-ui .p-multiselect,
+        .pill-ui .p-chips .p-chips-multiple-container,
+        .pill-ui .p-calendar .p-inputtext,
+        .pill-ui .p-inputnumber input,
+        .pill-ui .p-button,
+        .pill-ui .p-tag,
+        .pill-ui .p-autocomplete .p-inputtext {
+          border-radius: 9999px !important; /* forma píldora */
+          padding-top: .35rem;              /* delgado: ajustado al texto */
+          padding-bottom: .35rem;           /* delgado: ajustado al texto */
+          font-size: .95rem;
+        }
+
+        /* Botones compactos */
+        .pill-ui .p-button {
+          padding-left: 0.9rem;
+          padding-right: 0.9rem;
+        }
+
+        /* Triggers redondeados */
+        .pill-ui .p-dropdown .p-dropdown-trigger,
+        .pill-ui .p-multiselect .p-multiselect-trigger {
+          border-top-right-radius: 9999px !important;
+          border-bottom-right-radius: 9999px !important;
+        }
+
+        /* Inputs con ícono (buscadores) */
+        .pill-ui .p-input-icon-left > .p-inputtext,
+        .pill-ui .p-input-icon-right > .p-inputtext {
+          border-radius: 9999px !important;
+          padding-left: 2rem; /* espacio para ícono */
+        }
+
+        /* Paginador redondo */
+        .pill-ui .p-paginator .p-paginator-page,
+        .pill-ui .p-paginator .p-paginator-first,
+        .pill-ui .p-paginator .p-paginator-prev,
+        .pill-ui .p-paginator .p-paginator-next,
+        .pill-ui .p-paginator .p-paginator-last {
+          border-radius: 9999px !important;
+        }
+
+        /* TabView estilo píldora */
+        .pill-ui .p-tabview-nav-link {
+          border-radius: 9999px !important;
+          padding: .35rem .9rem;
+        }
+
+        /* Color sutil en íconos de tabs (empresarial) */
+        .pill-ui .p-tabview .p-tabview-nav li .p-tabview-nav-link i.pi.pi-box { color: var(--brand-primary) !important; }
+        .pill-ui .p-tabview .p-tabview-nav li .p-tabview-nav-link i.pi.pi-download { color: var(--brand-accent) !important; }
+        .pill-ui .p-tabview .p-tabview-nav li .p-tabview-nav-link i.pi.pi-clock { color: #8b5cf6 !important; } /* acento 3 */
       `}</style>
 
       <div className="page-header-bar flex align-items-center justify-content-between">
@@ -396,11 +472,11 @@ export default function BodegaModule() {
           <p className="subtitle m-0">Catálogo de bodegas y control de recepciones</p>
         </div>
         <div className="flex gap-2">
+          {/* Botón Home EXACTO como en el diseño registrado */}
           <Button
-            icon="pi pi-arrow-left"
+            icon="pi pi-home"
             severity="danger"
             rounded
-            raised
             size="small"
             aria-label="Atrás"
             onClick={() => navigate("/menu-principal")}
@@ -412,19 +488,18 @@ export default function BodegaModule() {
             onClick={() => setActive(1)}
             size="small"
             rounded
-            raised
           />
         </div>
       </div>
 
       <TabView className="pill-tabs" activeIndex={active} onTabChange={(e) => setActive(e.index)}>
-        <TabPanel header={<span style={{ display: "flex", alignItems: "center" }}><i className="pi pi-box" style={{ marginRight: 8 }} />Bodegas</span>}>
+        <TabPanel header={<span style={{ display: "flex", alignItems: "center", fontSize: "1.05rem" }}><i className="pi pi-box" style={{ fontSize: "1.2rem", marginRight: 8 }} />Bodegas</span>}>
           <BodegasTab />
         </TabPanel>
-        <TabPanel header={<span style={{ display: "flex", alignItems: "center" }}><i className="pi pi-download" style={{ marginRight: 8 }} />Recepciones</span>}>
+        <TabPanel header={<span style={{ display: "flex", alignItems: "center", fontSize: "1.05rem" }}><i className="pi pi-download" style={{ fontSize: "1.2rem", marginRight: 8 }} />Recepciones</span>}>
           <RecepcionesTab />
         </TabPanel>
-        <TabPanel header={<span style={{ display: "flex", alignItems: "center" }}><i className="pi pi-clock" style={{ marginRight: 8 }} />Pendientes por recibir</span>}>
+        <TabPanel header={<span style={{ display: "flex", alignItems: "center", fontSize: "1.05rem" }}><i className="pi pi-clock" style={{ fontSize: "1.2rem", marginRight: 8 }} />Pendientes por recibir</span>}>
           <PendientesTab />
         </TabPanel>
       </TabView>
